@@ -5,8 +5,8 @@ import argparse
 
 def dpcm(img: np.ndarray):
     print(img.shape)
-    img = img.astype(np.int16)
-    ret = np.zeros(img.shape, dtype=np.int16)
+    img = img.astype(np.int8)
+    ret = np.zeros(img.shape, dtype=np.int8)
     for channel in range(img.shape[2]):
         print(f"channel: {channel}")
         for row in range(img.shape[0]):
@@ -33,8 +33,8 @@ def dpcm(img: np.ndarray):
 
 def dpcm_gray_scale(img: np.ndarray):
     print(img.shape)
-    img = img.astype(np.int16)
-    ret = np.zeros(img.shape, dtype=np.int16)
+    img = img.astype(np.int8)
+    ret = np.zeros(img.shape, dtype=np.int8)
     for row in range(img.shape[0]):
         for column in range(img.shape[1]):
             pixel = img[row, column]
@@ -59,3 +59,4 @@ if __name__ == "__main__":
 
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     dpcm_gray_scale(img)
+    cv2.imwrite("out/gray_base.jpg", img)
