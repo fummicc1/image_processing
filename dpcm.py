@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 
 
 def dpcm(img: np.ndarray):
-    img = img.astype(np.int8)
-    ret = np.zeros(img.shape, dtype=np.int8)
+    img = img.astype(np.int16)
+    ret = np.zeros(img.shape, dtype=np.int16)
     for channel in range(img.shape[2]):
         for row in range(img.shape[0]):
             for column in range(img.shape[1]):
