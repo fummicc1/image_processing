@@ -1,50 +1,56 @@
 import cv2
 import numpy as np
 import argparse
+import matplotlib.pyplot as plt
 
 
 def dpcm(img: np.ndarray):
-    print(img.shape)
     img = img.astype(np.int8)
     ret = np.zeros(img.shape, dtype=np.int8)
     for channel in range(img.shape[2]):
-        print(f"channel: {channel}")
         for row in range(img.shape[0]):
             for column in range(img.shape[1]):
-                pixel = img[row, column, channel]
                 if column == 0:
                     continue
                 else:
                     ret[row, column, channel] = img[row, column,
                                                     channel] - img[row, column-1, channel]
-                    if img[row, column, channel] - img[row, column-1, channel] >= 200:
-                        print(f"img: {img[row, column, channel]}")
-                        print(f"previous img: {img[row, column-1, channel]}")
-                        print(
-                            f"diff: {img[row, column, channel]-img[row, column-1, channel]}")
 
-    ret = np.array(ret)
-    print(len(ret[ret[:, :, :] == 0]))
-    print(ret.shape)
     cv2.imwrite("out/dpcm_blue.jpg", ret[:, :, 0])
     cv2.imwrite("out/dpcm_green.jpg", ret[:, :, 1])
     cv2.imwrite("out/dpcm_red.jpg", ret[:, :, 2])
 
 
 def dpcm_gray_scale(img: np.ndarray):
-    print(img.shape)
-    img = img.astype(np.int8)
-    ret = np.zeros(img.shape, dtype=np.int8)
+    img = img.astype(np.int16)
+    ret = np.zeros(img.shape, dtype=np.int16)
     for row in range(img.shape[0]):
         for column in range(img.shape[1]):
-            pixel = img[row, column]
             if column == 0:
                 continue
             else:
                 ret[row, column] = img[row, column] - img[row, column-1]
 
-    ret = np.array(ret)
     cv2.imwrite("out/dpcm_gray.jpg", ret)
+    return ret
+
+
+def extract_heads(img: np.ndarray):
+    heads = img.copy()
+    heads[:, 1:] = 0
+    cv2.imwrite("out/dpcm__sendable_heads.jpg", heads)
+
+
+def restore(diff: np.ndarray, heads):
+    ret = np.zeros(diff.shape, dtype=np.uint8)
+    for row in range(img.shape[0]):
+        for column in range(img.shape[1]):
+            if column == 0:
+                ret[row, column] = heads[row]
+            else:
+                ret[row, column] = ret[row, column-1] + diff[row, column]
+
+    cv2.imwrite("out/dpcm_restore.jpg", ret)
 
 
 if __name__ == "__main__":
@@ -58,5 +64,7 @@ if __name__ == "__main__":
     dpcm(img)
 
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    dpcm_gray_scale(img)
+    diff = dpcm_gray_scale(img)
     cv2.imwrite("out/gray_base.jpg", img)
+    restore(diff, img[:, 0])
+    extract_heads(img)
